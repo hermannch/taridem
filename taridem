@@ -1,0 +1,66 @@
+#!/bin/sh
+#taridem TAR_ARGS.. - build reproducible archives
+
+: "${SOURCE_DATE_EPOCH:=0}"
+
+fail() {
+	printf 'FAIL: %s\n' "$@" >&2
+	exit 1
+}
+
+for tar_cmd in \
+	tar \
+	bsdtar \
+	"busybox tar" \
+	"busybox.static tar" \
+	"toybox tar" \
+	"toybox.static tar"; do
+
+	tar_provider=
+	tar_version=
+
+	_version="$($tar_cmd --version 2>/dev/null | head -n1)"
+	[ -z "$_version" ] && continue
+
+	if printf '%s' "$_version" | grep -q '^bsdtar'; then
+		tar_provider=bsd
+		tar_version="$(printf '%s' "$_version" | cut -d' ' -f2)"
+	elif printf '%s' "$_version" | grep -q '^tar (GNU tar)'; then
+		tar_provider=gnu
+		tar_version="$(printf '%s' "$_version" | cut -d' ' -f4)"
+	elif printf '%s' "$_version" | grep -q '^tar (busybox)'; then
+		tar_provider=busybox
+		tar_version="$(printf '%s' "$_version" | cut -d' ' -f3)"
+	elif printf '%s' "$_version" | grep -q '^toybox'; then
+		tar_provider=toybox
+		tar_version="$(printf '%s' "$_version" | cut -d' ' -f2)"
+	fi
+
+	[ -n "$tar_provider" ] && break
+done
+[ -z "$tar_provider" ] && fail "'tar' was not found"
+
+case "$tar_provider" in
+	bsd)
+		fail "'$tar_provider tar' is not yet supported by 'taridem'"
+		$tar_cmd \
+			"$@"
+		;;
+	busybox)
+		fail "'$tar_provider tar' is not yet supported by 'taridem'"
+		$tar_cmd \
+			"$@"
+		;;
+	gnu)
+		$tar_cmd \
+			--sort=name \
+			--owner=0 --group=0 --numeric-owner \
+			--mtime="@$SOURCE_DATE_EPOCH" \
+			"$@"
+		;;
+	toybox)
+		fail "'$tar_provider tar' is not yet supported by 'taridem'"
+		$tar_cmd \
+			"$@"
+		;;
+esac

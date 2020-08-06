@@ -1,0 +1,7 @@
+* taridem
+	* gnu tar
+		* guard --sort flag by a version check
+	* bsdtar: add support
+	* busybox: add support (might actually be impossible?)
+	* toybox: add support (might actually be impossible?)
+* tests: actually implement them
