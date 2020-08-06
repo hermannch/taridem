@@ -1,6 +1,6 @@
 # Taridem
 
-`taridem` is wrapper around GNU's implementation of tar to be able to create
+`taridem` is a wrapper around GNU's implementation of `tar` to be able to create
 binary equal (a.k.a. reproducible) archives.
 
 It's written in valid POSIX shell syntax and linted with [shellcheck](https://github.com/koalaman/shellcheck) and [shfmt](https://github.com/mvdan/sh).
@@ -31,9 +31,8 @@ Make `taridem` available in your PATH.
 Call it as you usually would call `tar`.
 
 ```
-taridem -c --gzip -f someFile.tar.xz file1 file2
+taridem -c --xz -f someFile.tar.xz file1 file2
 ```
-
 
 ## Similar Projects
 
